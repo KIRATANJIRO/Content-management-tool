@@ -1,0 +1,108 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+class Content {
+    private int id;
+    private String title;
+    private String body;
+
+    public Content(int id, String title, String body) {
+        this.id = id;
+        this.title = title;
+        this.body = body;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+}
+
+class ContentManager {
+    private Map<Integer, Content> contentDatabase;
+    private int nextId;
+
+    public ContentManager() {
+        contentDatabase = new HashMap<>();
+        nextId = 1;
+    }
+
+    public int createContent(String title, String body) {
+        int id = nextId++;
+        Content content = new Content(id, title, body);
+        contentDatabase.put(id, content);
+        return id;
+    }
+
+    public Optional<Content> getContentById(int id) {
+        return Optional.ofNullable(contentDatabase.get(id));
+    }
+
+    public List<Content> getAllContent() {
+        return new ArrayList<>(contentDatabase.values());
+    }
+
+    public boolean updateContent(int id, String newTitle, String newBody) {
+        Content content = contentDatabase.get(id);
+        if (content != null) {
+            content.setTitle(newTitle);
+            content.setBody(newBody);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean deleteContent(int id) {
+        return contentDatabase.remove(id) != null;
+    }
+}
+
+public class ContentManagementTool {
+    public static void main(String[] args) {
+        ContentManager contentManager = new ContentManager();
+
+        int contentId1 = contentManager.createContent("Article 1", "This is the content of Article 1.");
+        int contentId2 = contentManager.createContent("Article 2", "This is the content of Article 2.");
+
+        // Retrieve and display content
+        System.out.println("Content with ID " + contentId1 + ":");
+        contentManager.getContentById(contentId1).ifPresent(content -> {
+            System.out.println("Title: " + content.getTitle());
+            System.out.println("Body: " + content.getBody());
+        });
+
+        // Update content
+        contentManager.updateContent(contentId1, "Updated Article 1", "This is the updated content of Article 1.");
+
+        // Delete content
+        contentManager.deleteContent(contentId2);
+
+        // Display all content
+        System.out.println("\nAll Content:");
+        List<Content> allContent = contentManager.getAllContent();
+        for (Content content : allContent) {
+            System.out.println("ID: " + content.getId());
+            System.out.println("Title: " + content.getTitle());
+            System.out.println("Body: " + content.getBody());
+            System.out.println();
+        }
+    }
+}
